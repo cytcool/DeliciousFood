@@ -13,9 +13,14 @@ import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private static final int STATE_FILTER = 1;
+    private static final int STATE_NORMAL = 2;
+    private int mSTATE = STATE_NORMAL;
 
     private Button mBtnDetail;
     private LinearLayout mCheckBoxContainer;
@@ -39,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mBtnNext;
 
     private List<FoodData> mFoodList;
+    private List<FoodData> mFilteredFoodList;
     private int mCurrentPage;
 
 
@@ -65,11 +71,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mRadioGroup = findViewById(R.id.radio_group);
         mRadioYes = findViewById(R.id.radio_yes);
         mRadioNo = findViewById(R.id.radio_no);
-        mRadioGroup.check(R.id.radio_no);
 
         mTvPrice = findViewById(R.id.tv_price);
         mSeekBarPrcie = findViewById(R.id.seekbar_price);
-        mSeekBarPrcie.setProgress(100);
         mTvPrice.setText(""+mSeekBarPrcie.getProgress());
         mSeekBarPrcie.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -90,14 +94,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mImageFood = findViewById(R.id.image_food);
         mFoodList = initData();
-        mCurrentPage = 0;
-        mImageFood.setImageResource(mFoodList.get(mCurrentPage).getImgResId());
+
         
         //翻页功能
         mBtnPre = findViewById(R.id.btn_pre);
         mBtnNext = findViewById(R.id.btn_next);
         mBtnPre.setOnClickListener(this);
         mBtnNext.setOnClickListener(this);
+
+        //搜索与重置
+        mBtnReset = findViewById(R.id.btn_reset);
+        mBtnSearch = findViewById(R.id.btn_search);
+        mBtnSearch.setOnClickListener(this);
+        mBtnReset.setOnClickListener(this);
+
+        loadInitialView();
 
     }
 
@@ -128,21 +139,93 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_next:
                 showNextPage();
                 break;
+            case R.id.btn_reset:
+                mSTATE = STATE_NORMAL;
+                loadInitialView();
+                break;
+            case R.id.btn_search:
+                mSTATE = STATE_FILTER;
+                showFilterFoods();
+                break;
         }
     }
 
+    private void loadInitialView() {
+        mBtnPre.setEnabled(true);
+        mBtnNext.setEnabled(true);
+        mBtnDetail.setEnabled(true);
+        checkAll();
+        mSeekBarPrcie.setProgress(100);
+        mRadioGroup.check(R.id.radio_no);
+        showPageAtIndex(0);
+    }
+
+    private void showFilterFoods() {
+        mFilteredFoodList = filteredFoods();
+        boolean enablePageButton = (mFilteredFoodList.size() > 1);
+        mBtnPre.setEnabled(enablePageButton);
+        mBtnNext.setEnabled(enablePageButton);
+
+        mBtnDetail.setEnabled(!mFilteredFoodList.isEmpty());
+
+        if (mFilteredFoodList.isEmpty()){
+            mImageFood.setImageResource(R.drawable.nodata);
+        }else {
+            showPageAtIndex(0);
+        }
+    }
+
+    private List<FoodData> currentShowingFoods(){
+        switch (mSTATE){
+            case STATE_FILTER:
+                return mFilteredFoodList;
+            case STATE_NORMAL:
+                return mFoodList;
+            default:
+                return mFoodList;
+        }
+    }
+
+    private List<FoodData> filteredFoods(){
+        //1、价格
+        int maxPrice = mSeekBarPrcie.getProgress();
+        //2、是否免辣
+        boolean isSpicy = (mRadioGroup.getCheckedRadioButtonId() == R.id.radio_no);
+        //3、美食类型
+        List<Integer> selectedFoodType = new ArrayList<>();
+        if (mCheckBoxChineseFood.isChecked()){
+            selectedFoodType.add(FoodData.CHINESE_FOOD);
+        }
+        if (mCheckBoxFastFood.isChecked()){
+            selectedFoodType.add(FoodData.FAST_FOOD);
+        }
+        if (mCheckBoxDesertFood.isChecked()){
+            selectedFoodType.add(FoodData.DESERT_FOOD);
+        }
+        List<FoodData> results = new ArrayList<>();
+        for (FoodData food:mFoodList) {
+            if (food.getPrice()<maxPrice && selectedFoodType.contains(food.getType())){
+                if (isSpicy || !food.isSpicy()){
+                    results.add(food);
+                }
+            }
+
+        }
+        return results;
+    }
+
     private void showNextPage() {
-        int nextPage = (mCurrentPage - 1 + mFoodList.size()) % mFoodList.size();
+        int nextPage = (mCurrentPage - 1 + currentShowingFoods().size()) % currentShowingFoods().size();
         showPageAtIndex(nextPage);
     }
 
     private void showPrePage() {
-        int prePage = (mCurrentPage + 1) % mFoodList.size();
+        int prePage = (mCurrentPage + 1) % currentShowingFoods().size();
         showPageAtIndex(prePage);
     }
 
     private void showPageAtIndex(int index){
-        FoodData food = mFoodList.get(index);
+        FoodData food = currentShowingFoods().get(index);
         mImageFood.setImageResource(food.getImgResId());
         mCurrentPage = index;
     }
