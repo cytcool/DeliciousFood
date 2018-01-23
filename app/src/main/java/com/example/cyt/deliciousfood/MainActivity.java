@@ -1,5 +1,6 @@
 package com.example.cyt.deliciousfood;
 
+import android.content.Intent;
 import android.graphics.Paint;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -231,4 +232,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    public void openActivity(View view) {
+        Intent intent = new Intent(this,DetailActivity.class);
+        Bundle bundle = new Bundle();
+        FoodData food = currentShowingFoods().get(mCurrentPage);
+        bundle.putString("name",food.getName());
+        bundle.putInt("imgRes",food.getImgResId());
+        bundle.putFloat("rating",food.getRating());
+        bundle.putInt("price",food.getPrice());
+        bundle.putString("description",food.getDescription());
+        bundle.putBoolean("isSpicy",food.isSpicy());
+        bundle.putInt("type",food.getType());
+        intent.putExtras(bundle);
+        startActivity(intent);
+
+    }
 }
