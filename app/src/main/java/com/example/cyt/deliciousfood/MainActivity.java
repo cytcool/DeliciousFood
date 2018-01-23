@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button mBtnDetail;
     private LinearLayout mCheckBoxContainer;
@@ -92,6 +92,12 @@ public class MainActivity extends AppCompatActivity {
         mFoodList = initData();
         mCurrentPage = 0;
         mImageFood.setImageResource(mFoodList.get(mCurrentPage).getImgResId());
+        
+        //翻页功能
+        mBtnPre = findViewById(R.id.btn_pre);
+        mBtnNext = findViewById(R.id.btn_next);
+        mBtnPre.setOnClickListener(this);
+        mBtnNext.setOnClickListener(this);
 
     }
 
@@ -112,4 +118,34 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btn_pre:
+                showPrePage();
+                break;
+            case R.id.btn_next:
+                showNextPage();
+                break;
+        }
+    }
+
+    private void showNextPage() {
+        int nextPage = (mCurrentPage - 1 + mFoodList.size()) % mFoodList.size();
+        showPageAtIndex(nextPage);
+    }
+
+    private void showPrePage() {
+        int prePage = (mCurrentPage + 1) % mFoodList.size();
+        showPageAtIndex(prePage);
+    }
+
+    private void showPageAtIndex(int index){
+        FoodData food = mFoodList.get(index);
+        mImageFood.setImageResource(food.getImgResId());
+        mCurrentPage = index;
+    }
+
+
 }
