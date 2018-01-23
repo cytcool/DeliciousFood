@@ -5,6 +5,107 @@
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     >
+    <FrameLayout
+        android:layout_height="48dp"
+        android:layout_width="match_parent"
+        android:background="@color/colorTitleBar">
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="详情页"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#fff"
+            android:layout_gravity="center"
+            android:id="@+id/tv_title"/>
 
+        <ImageButton
+            android:layout_height="48dp"
+            android:layout_width="48dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/ic_keyboard_backspace_white_24dp"
+            android:onClick="closeActivity"/>
+    </FrameLayout>
+
+    <ImageView
+        android:layout_height="300dp"
+        android:layout_width="match_parent"
+        android:id="@+id/image_food"
+        android:src="@drawable/desert"
+        android:layout_margin="16dp"
+        android:scaleType="centerCrop"/>
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="名称: cupcake-纸杯蛋糕"
+        android:textColor="#000"
+        android:id="@+id/tv_name"
+        android:lines="1"
+        android:layout_marginLeft="8dp"
+        android:padding="8dp"/>
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="价格: 30元"
+        android:textColor="#000"
+        android:id="@+id/tv_price"
+        android:lines="1"
+        android:layout_marginLeft="8dp"
+        android:padding="8dp"/>
+
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="简介:"
+            android:textColor="#000"
+            android:lines="1"
+            android:layout_marginLeft="16dp"/>
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:text="巧克力的蛋糕再加上巧克力糖霜,浓浓的巧克力味道让人欲罢不能"
+            android:textColor="#000"
+            android:id="@+id/tv_description"
+            android:lines="3"
+            android:layout_marginLeft="8dp"
+            android:ellipsize="end"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="评分:"
+            android:textColor="#000"
+            android:lines="1"
+            android:layout_marginLeft="8dp"
+            android:padding="8dp"/>
+
+        <RatingBar
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id="@+id/rating_bar"
+            style="@style/Widget.AppCompat.RatingBar.Small"
+            android:isIndicator="true"
+            android:rating="2.5"
+            android:numStars="5"
+            android:stepSize="0.5"/>
+
+    </LinearLayout>
 
 </LinearLayout>
